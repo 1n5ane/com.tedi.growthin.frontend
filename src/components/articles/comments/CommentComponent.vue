@@ -8,6 +8,7 @@ import ReactionButton from "@/components/core/buttons/ReactionButton.vue";
 import CommentTextArea from "@/components/core/inputs/CommentTextArea.vue";
 import DateUtils from "@/utils/DateUtils";
 import AuthorCommentDeleteComponent from "@/components/articles/comments/AuthorCommentDeleteComponent.vue";
+import ReactionsCountComponent from "@/components/articles/ReactionsCountComponent.vue";
 
 
 const props = defineProps({
@@ -115,7 +116,7 @@ const handleUserCommentReaction = async (alias) => {
         <reaction-button padding-bottom-up="0" padding-left-right="0" @user-reaction="handleUserCommentReaction"/>
       </div>
       <div class="col-auto reaction-col">
-        <span class="reactions-count">{{ props.comment.commentReactions.length }} Reactions</span>
+        <reactions-count-component :reactions="props.comment.commentReactions" modal-title="Comment Reactions"/>
       </div>
     </div>
   </div>
