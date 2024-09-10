@@ -1,14 +1,13 @@
-import { createStore } from 'vuex'
+import {createStore} from 'vuex'
+import authenticationStore from '@/store/core/authentication/authentication'
+import actionStatusStore from '@/store/action-status/actionStatus'
+import reactionStore from '@/store/reaction/reaction'
 
 export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
+  strict: process.env.NODE_ENV !== 'production',
+  modules:{
+    authenticationStore,
+    actionStatusStore,
+    reactionStore
   }
 })
