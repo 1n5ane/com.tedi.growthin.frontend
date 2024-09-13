@@ -2,6 +2,7 @@
   <div class="input-container">
     <textarea ref="textareaRef"
               :class="{'text-input':true, 'readonly-cursor': props.readOnly,'text-center': props.textCenter }"
+              :style="{'border': props.enableBorder?'1px solid black':'none'}"
               :id="id"
               :readonly="props.readOnly"
               :required="required"
@@ -43,6 +44,10 @@ const props = defineProps({
   textCenter: {
     type: Boolean,
     default: false
+  },
+  enableBorder:{
+    type: Boolean,
+    default: false
   }
 });
 
@@ -51,7 +56,6 @@ const textareaRef = ref(null);
 
 const focus = () => {
   if (textareaRef.value) {
-    console.log("OPOO")
     textareaRef.value.focus();
   }
 }

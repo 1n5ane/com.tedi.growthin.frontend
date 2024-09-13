@@ -10,8 +10,10 @@ import {VueMultiImageUpload} from '@zakerxa/vue-multiple-image-upload';
 import FileUtils from "@/utils/FileUtils";
 import UserArticleService from "@/services/user/user-articles/UserArticleService";
 import ImageUtils from "@/utils/ImageUtils";
+import {useRouter} from "vue-router";
 
 const store = useStore()
+const router = useRouter()
 const userImageRef = reactive({
   base64Data: '',
   mediaType: ''
@@ -59,7 +61,7 @@ const handleImagesData = (images) => {
 
 
 const handleAvatarClicked = () => {
-
+  router.push({path: `/profile/${store.getters['authenticationStore/getCurrentLoggedInUser']?.id}`})
 }
 
 const handleCreateArticle = async () => {
@@ -134,7 +136,7 @@ onMounted(async () => {
         />
       </div>
 
-      <div class="col-8">
+      <div class="col-8" style="margin-left: 2px">
         <article-text-area id="article-title"
                             placeholder="Title"
                             v-model="formData.title"/>
@@ -207,5 +209,6 @@ onMounted(async () => {
 .avatar-component {
   top: 10px;
   left: 10px;
+  cursor: pointer !important;
 }
 </style>

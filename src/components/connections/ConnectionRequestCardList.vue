@@ -4,6 +4,7 @@ import {onMounted, ref} from "vue";
 import ConnectionRequestCard from "@/components/connections/ConnectionRequestCard.vue";
 import UserConnectionService from "@/services/user/user-connections/UserConnectionService";
 import UserProfileService from "@/services/user/user-profiles/UserProfileService";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   pageSize: {
@@ -14,6 +15,7 @@ const props = defineProps({
 
 
 const emit = defineEmits(['error', 'success','accepted-request'])
+const router = useRouter()
 
 const userConnectionService = UserConnectionService.getInstance()
 const userProfileService = UserProfileService.getInstance()
@@ -81,9 +83,8 @@ const handleShowMore = async () => {
   }
 };
 
-//TODO: emit event if card clicked so that parent can redirect to corresponding profile
 const handleAvatarClick = async (userId) => {
-  console.log("Avatar clicked for user:", userId)
+  await router.push({path: `/profile/${userId}`})
 }
 
 

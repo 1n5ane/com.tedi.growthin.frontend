@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
 import {useStore} from "vuex";
 import UserArticleService from "@/services/user/user-articles/UserArticleService";
 import NewCommentComponent from "@/components/articles/comments/NewCommentComponent.vue";
@@ -21,7 +21,7 @@ const props = defineProps({
 });
 
 const store = useStore()
-const emit = defineEmits(['error', 'success','comment-creation-success'])
+const emit = defineEmits(['error', 'success', 'comment-creation-success'])
 const commentsRef = ref(null)
 
 /** @type {import( "@/components/articles/comments/NewCommentComponent").default} */
@@ -129,14 +129,22 @@ const handleCommentRefresh = async (articleId, commentId) => {
   }
 }
 
+
+onUnmounted(() => {
+  commentsRef.value = []
+  currentPage.value = 0
+  hasMoreRef.value = false
+  totalPages.value = 1
+})
+
+
 defineExpose({focusNewComment})
 
 </script>
 
 <template>
   <div class="comment-list-wrapper">
-    <div class="comment-list"
-         :style="{'min-height': commentsRef && commentsRef.length ? '165px' : '0px'}">
+    <div class="comment-list" :style="{'min-height': commentsRef && commentsRef.length ? '165px' : '0px'}">
       <div v-for="comment in commentsRef" :key="comment.id" class="row comment-component justify-content-center">
         <comment-component :comment="comment"
                            @success="handleSuccess"

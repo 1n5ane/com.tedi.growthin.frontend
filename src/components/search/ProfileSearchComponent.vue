@@ -3,6 +3,7 @@ import BaseSearchInput from "@/components/core/inputs/BaseSearchInput.vue";
 import UserProfileService from "@/services/user/user-profiles/UserProfileService";
 import {ref, watch} from "vue";
 import UserAvatarComponent from "@/components/core/avatars/UserAvatarComponent.vue";
+import {useRouter} from "vue-router";
 
 
 const props = defineProps({
@@ -22,7 +23,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["search-error"])
-
+const router = useRouter()
 const userProfileService = UserProfileService.getInstance()
 const searchResults = ref([]);
 const searchQuery = ref('');
@@ -71,9 +72,14 @@ const handleShowMore = async () => {
   }
 };
 
+const clearSearchForm = () =>{
+  searchQuery.value = ''
+  searchResults.value = []
+}
+
 const handleProfileClicked = (profileId) => {
-  //redirect to profile
-  console.log(profileId);
+  clearSearchForm()
+  router.push({path:`/profile/${profileId}`})
 }
 
 const handleScroll = (event) => {

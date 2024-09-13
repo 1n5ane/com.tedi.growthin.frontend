@@ -33,7 +33,7 @@ const handleSubmit = async () => {
         async () => {
           const userService = UserService.getInstance();
           //get currentlogged in user details and update authentication store
-          const response = await userService.getUser(username)
+          const response = await userService.getUser({username})
           if (response.user == null) {
             throw new Error("Something went wrong during login! Please try again later")
           }

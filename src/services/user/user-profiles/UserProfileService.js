@@ -55,8 +55,6 @@ export default class UserProfileService {
                 isAgePublic: userProfile.isAgePublic,
                 education: userProfile.education,
                 isEducationPublic: userProfile.isEducationPublic,
-                country: userProfile.country,
-                isCountryPublic: userProfile.isCountryPublic,
                 cvDocument: userProfile.cvDocument,
                 isCvDocumentPublic: userProfile.isCvDocumentPublic,
                 profilePic: userProfile.profilePic,

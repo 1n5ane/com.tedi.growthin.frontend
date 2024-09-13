@@ -24,9 +24,19 @@ export default class UserService {
     }
 
 
-    async getUser(username) {
+    async getUser(field) {
         try {
-            const response = await axiosInstance.get(`${this.USER_ENDPOINT}/${username}`)
+            let params = {}
+            if (field.username) {
+                params.username = field.username
+            } else if (field.id != null) {
+                params.id = field.id
+            } else {
+                throw new Error(`Username or id expected to get user details. Instead provided ${JSON.stringify(field)}`)
+            }
+            const response = await axiosInstance.get(`${this.USER_ENDPOINT}/details`, {
+                params
+            })
             return response.data;
         } catch (e) {
             return Promise.reject(e)
@@ -79,7 +89,7 @@ export default class UserService {
 
     async updateUser(user) {
         try {
-            const response = await axiosInstance.put(`${this.USER_ENDPOINT}`, {
+            const response = await axiosInstance.put(`${this.USER_ENDPOINT}/${user.id}`, {
                 username: user.username,
                 password: user.password,
                 name: user.name,

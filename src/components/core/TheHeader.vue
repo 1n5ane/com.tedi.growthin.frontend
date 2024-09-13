@@ -1,12 +1,15 @@
 <script setup>
-import BaseInput from "@/components/core/inputs/BaseInput.vue";
 import BaseButton from "@/components/core/buttons/BaseButton.vue";
 import {useRouter} from "vue-router";
 import ProfileSearchComponent from "@/components/search/ProfileSearchComponent.vue";
+import {useStore} from "vuex";
+import {computed, ref} from "vue";
 
 const router = useRouter();
-
+const store = useStore()
 const emit = defineEmits(['error'])
+
+const currentUser = computed(()=> store.getters['authenticationStore/getCurrentLoggedInUser']);
 
 const handleLogout = async () => {
   await router.push({name: "logout"});
@@ -43,7 +46,7 @@ const emitError = (errorMessage) => {
           <router-link to="/network" class="navbar-item">Network</router-link>
           <router-link to="/messages" class="navbar-item">Messages</router-link>
           <router-link to="/notifications" class="navbar-item">Notifications</router-link>
-          <router-link to="/profile" class="navbar-item">Profile</router-link>
+          <router-link :to="`/profile/${currentUser?.id}`" class="navbar-item">Profile</router-link>
         </div>
       </div>
 
@@ -101,7 +104,7 @@ const emitError = (errorMessage) => {
   margin: 0;
   position: sticky;
   top: 0;
-  z-index:20
+  z-index: 20
 }
 
 .navbar {

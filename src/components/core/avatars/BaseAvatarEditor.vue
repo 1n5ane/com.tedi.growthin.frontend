@@ -3,6 +3,7 @@ import avatar3 from "@/assets/images/avatars/avatar_3.jpg";
 import {VueAvatar} from "vue-avatar-editor-improved";
 import {ref} from 'vue';
 import BaseButton from "@/components/core/buttons/BaseButton.vue";
+import BaseLabel from "@/components/core/inputs/labels/BaseLabel.vue";
 
 const props = defineProps({
   id: {
@@ -46,6 +47,7 @@ const avatarContainerRef = ref(null);
 const vueavatar = ref(null);
 
 const applyChanges = () => {
+  console.log("YEEES")
   if (vueavatar) {
     let imgData = vueavatar.value.getImageScaled().toDataURL()
     emit("edit-completed", imgData)
@@ -79,9 +81,13 @@ const handleScroll = (event) => {
         @wheel="handleScroll"
         @vue-avatar-editor:image-ready="onImageReady">
     </vue-avatar>
-    <BaseButton color="rgba(255, 69, 0, 1)" bullet-color="black" hover-color="black"
+    <template v-if="$slots.buttons ">
+      <slot name="buttons" :applyChanges="applyChanges"></slot>
+    </template>
+    <BaseButton v-else color="rgba(255, 69, 0, 1)" bullet-color="black" hover-color="black"
                 text-color="white" hover-text-color="white" text="Apply"
                 type="button" @button-click="applyChanges"/>
+
   </div>
 
 </template>

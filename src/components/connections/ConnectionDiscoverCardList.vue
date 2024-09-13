@@ -1,10 +1,11 @@
 <script setup>
 
-// TODO: on lolos11 -> fix bug MY NETWORK coiunt egative wen connect on discover
 import UserConnectionService from "@/services/user/user-connections/UserConnectionService";
 import UserProfileService from "@/services/user/user-profiles/UserProfileService";
 import {onMounted, ref, watch} from "vue";
 import ConnectionDiscoverCard from "@/components/connections/ConnectionDiscoverCard.vue";
+import {useRouter} from "vue-router";
+import {useStore} from "vuex";
 
 const props = defineProps({
   pageSize: {
@@ -17,6 +18,8 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['error', 'success'])
+const router = useRouter()
+const store = useStore()
 
 const userConnectionService = UserConnectionService.getInstance()
 const userProfileService = UserProfileService.getInstance()
@@ -39,11 +42,24 @@ const searchNonConnectedProfileLike = async (page, username) => {
         userIds.push(profile.id);
       })
       const res = await userConnectionService.checkUserConnectionsExist(userIds)
-      profiles = profiles.filter((profile) => {
-        return !(profile.id in res) || res[profile.id] === false;
+      profiles.forEach((profile) => {
+        profile.isConnected =  (profile.id in res) && res[profile.id] === true;
       })
 
-      //TODO: remove any profiles that already have a connection request
+      profiles = profiles.filter((profile) => {
+        return profile.id !== store.getters["authenticationStore/getCurrentLoggedInUser"]?.id
+      })
+
+      for (let i = 0; i < profiles.length; i++) {
+        const profile = profiles[i];
+        if (!profile.isConnected) {
+          const res = await userConnectionService.checkPendingConnectionRequestExists(profile.id);
+          if (res && res.success) {
+            profile.pendingRequestExists = res.exists;
+          }
+        }
+      }
+
       //      NEEDS IMPLEMENTATION FROM THE BACK...
       totalPages.value = response.totalPages
       hasMoreRef.value = page < response.totalPages - 1
@@ -72,9 +88,8 @@ const handleShowMore = async () => {
   }
 };
 
-//TODO: emit event if card clicked so that parent can redirect to corresponding profile
 const handleAvatarClick = async (userId) => {
-  console.log("Avatar clicked for user:", userId)
+  await router.push({path: `/profile/${userId}`})
 }
 
 const handleCreateConnection = async (userId) => {

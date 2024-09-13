@@ -5,6 +5,7 @@ import {useRouter} from "vue-router";
 import {onMounted} from "vue";
 import UserProfileService from "@/services/user/user-profiles/UserProfileService";
 import {useStore} from "vuex";
+import baseAvatarImage from "@/assets/images/avatars/avatar_1.jpg";
 
 const router = useRouter()
 const store = useStore()

@@ -14,9 +14,17 @@ const props = defineProps({
     type: Number,
     default: 2
   },
-  commentPageSize:{
+  commentPageSize: {
     type: Number,
     default: 2
+  },
+  maxHeight: {
+    type: String,
+    default: "90vh"
+  },
+  hideNewArticle: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -131,8 +139,8 @@ const refreshAllArticleList = async (successMessage) => {
 
 <template>
   <div class="article-list-wrapper">
-    <div class="article-list">
-      <new-article-component @error="handleError" @success="refreshAllArticleList"/>
+    <div class="article-list" :style="{'max-height':props.maxHeight, 'height':'100%'}">
+      <new-article-component v-if="!props.hideNewArticle" @error="handleError" @success="refreshAllArticleList"/>
       <div v-for="article in articlesRef" :key="article.id" class="row article-component justify-content-center">
         <article-component :article="article"
                            :comment-page-size="props.commentPageSize"
@@ -146,9 +154,9 @@ const refreshAllArticleList = async (successMessage) => {
         <div v-if="hasMoreRef" class="col-12 show-more-text align-items-center" @click="handleShowMore">
           Show more ▼
         </div>
-        <div v-if="articlesRef!==null && !articlesRef.length" class="col align-self-center">
-          That's all about it
-        </div>
+      </div>
+      <div v-if="articlesRef!==null && !articlesRef.length" class="col align-self-center">
+        No articles to show
       </div>
     </div>
   </div>
@@ -180,7 +188,6 @@ const refreshAllArticleList = async (successMessage) => {
   gap: 3.5rem;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: 90vh;
   width: 100%;
   position: relative;
 }

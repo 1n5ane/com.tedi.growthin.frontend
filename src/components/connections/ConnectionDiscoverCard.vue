@@ -32,8 +32,8 @@ const handleCreateConnection = (userId) => {
       <p class="jobField" v-text="props.profile.jobField"></p>
     </div>
   </div>
-  <div class="row">
-    <div class="col-12">
+  <div v-if="props.profile.isConnected === false" class="row">
+    <div v-if="props.profile.pendingRequestExists === false" class="col-12">
       <base-button color="rgba(255, 69, 0, 1)"
                    type="submit"
                    bullet-color="black"
@@ -41,6 +41,14 @@ const handleCreateConnection = (userId) => {
                    hover-text-color="white"
                    text="Connect"
                    @button-click="handleCreateConnection(props.profile.id)"/>
+    </div>
+    <div v-if="props.profile.pendingRequestExists === true" class="col-12 align-self-center small-text" style="padding: 8px">
+      Connection pending approval
+    </div>
+  </div>
+  <div v-else-if="props.profile.isConnected === true" class="row align-items-center justify-content-center">
+    <div class="col-12 align-self-center small-text" style="padding: 8px">
+      Already Connected
     </div>
   </div>
 </template>

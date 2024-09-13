@@ -72,6 +72,25 @@ export default class UserConnectionService {
         }
     }
 
+    async getConnectionRequest(userId) {
+        try {
+            const response = await axiosInstance.get(`${this.CONNECTIONS_ENDPOINT}/requests/user/${userId}`)
+            return response.data;
+        } catch (e) {
+            return Promise.reject(e)
+        }
+    }
+
+    async checkPendingConnectionRequestExists(userId) {
+        try {
+            const response = await axiosInstance.get(`${this.CONNECTIONS_ENDPOINT}/requests/user/${userId}/exists`)
+            return response.data;
+        } catch (e) {
+            return Promise.reject(e)
+        }
+    }
+
+
     async searchAllUserConnectionsByUserId(userId,
                                            username,
                                            page = 0,

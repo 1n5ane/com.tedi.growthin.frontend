@@ -2,18 +2,19 @@ import {createRouter, createWebHistory} from 'vue-router';
 import registerRoutes from './register/routes';
 import authenticationRoutes from './login/routes'
 import networkRoutes from './network/routes'
+import profileRoutes from './profile/routes'
 
 const baseRoutes = [
     {
         path: '/home',
         name: 'home',
-        component: () => import('@/views/HomeView.vue'), //Home Component
+        component: () => import('@/views/HomeView.vue'),
         meta: {requiresAuth: true}
     },
     {
         path: '/',
         name: '',
-        component: () => import('@/views/HomeView.vue'), //add Home Component
+        component: () => import('@/views/HomeView.vue'),
         meta: {requiresAuth: true}
     },
 ];
@@ -22,7 +23,8 @@ const routes =
     baseRoutes
         .concat(registerRoutes)
         .concat(authenticationRoutes)
-        .concat(networkRoutes);
+        .concat(networkRoutes)
+        .concat(profileRoutes);
 const router = createRouter({
     history: createWebHistory(),
     routes,
