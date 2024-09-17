@@ -3,6 +3,7 @@ import {computed, onMounted, ref} from 'vue';
 import UserAvatarComponent from "@/components/core/avatars/UserAvatarComponent.vue";
 import {useStore} from "vuex";
 import ImageUtils from "@/utils/ImageUtils";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   reactions: Array,
@@ -15,6 +16,7 @@ const props = defineProps({
 const isReactionsHovered = ref(false);
 const isModalVisible = ref(false);  // Tracks modal visibility
 const store = useStore()
+const router = useRouter()
 const availableReactions = computed(() => store.getters['reactionStore/getAvailableReactions'])
 
 const handleMouseOver = () => {
@@ -41,8 +43,7 @@ const getImageDataFromAlias = (alias) => {
 }
 
 const handleReactionRowClicked = (userId) => {
-  // TODO: redirect to user profile
-  //redirect to user profile
+  router.push({path:`/profile/${userId}`})
 }
 
 </script>

@@ -4,7 +4,7 @@ import JwtUtils from "@/utils/JwtUtils";
 const state = {
     token: localStorage.getItem('jwt_token'),
     refreshToken: localStorage.getItem('jwt_refresh_token'),
-    isAdmin: localStorage.getItem('is_admin'),
+    isAdmin: localStorage.getItem('is_admin') === 'true',
     //claims of authenticated user
     claims: JSON.parse(localStorage.getItem('jwt_claims')),
     currentLoggedInUser: JSON.parse(localStorage.getItem('current_user')),
@@ -13,7 +13,7 @@ const state = {
 const mutations = {
     SET_TOKENS(state, payload) {
         state.token = payload.token;
-        state.refreshToken = payload.refreshToken;
+        state.refreshToken = payload.refresh_token;
     },
     SET_CLAIMS(state, claims) {
         state.claims = claims;

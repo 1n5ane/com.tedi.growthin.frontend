@@ -1,4 +1,3 @@
-import MyProfileView from "@/views/profile/UserProfileView.vue";
 import UserProfileView from "@/views/profile/UserProfileView.vue";
 
 const routes = [

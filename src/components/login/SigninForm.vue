@@ -16,7 +16,7 @@ const passwordInput = ref('');
 const isNullEmptyOrUndefined = (value) => !value?.trim();
 
 const login = async (username, password) => {
-  return store.dispatch('authenticationStore/login', {username, password});
+  return await store.dispatch('authenticationStore/login', {username, password});
 };
 
 const handleSubmit = async () => {
@@ -37,10 +37,8 @@ const handleSubmit = async () => {
           if (response.user == null) {
             throw new Error("Something went wrong during login! Please try again later")
           }
-
           //setting currentLoggedInUser
           await store.dispatch('authenticationStore/setCurrentLoggedInUser', response.user)
-
           emit('loginSuccess');
           console.log(`User ${store.getters["authenticationStore/getCurrentLoggedInUser"].username} logged in successfully.`);
         },

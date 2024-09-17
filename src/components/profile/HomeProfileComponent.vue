@@ -20,8 +20,7 @@ const userJobFieldRef = ref('');
 const userConnectionsCountRef = ref(null);
 
 const handleAvatarClicked = () => {
-  console.log("Avatar clicked")
-  //redirect to profile of currentLoggedInUser
+  router.push({path: `/profile/${store.getters['authenticationStore/getCurrentLoggedInUser']?.id}`})
 }
 
 const handleAvatarHovered = (isHovered) => {
@@ -36,8 +35,8 @@ const handleMouseLeave = () => {
   isAvatarHovered.value = false;
 }
 
-const handleTotalConnectionsClick = async () =>{
-  await router.push({name:'my-network', hash: '#my-connections' })
+const handleTotalConnectionsClick = async () => {
+  await router.push({name: 'my-network', hash: '#my-connections'})
 }
 
 onMounted(async () => {
@@ -103,7 +102,7 @@ onMounted(async () => {
 
       <div class="col-auto align-items-center">
         <div class="total-connections" @click="handleTotalConnectionsClick">
-          {{userConnectionsCountRef}} total connections
+          {{ userConnectionsCountRef }} total connections
         </div>
       </div>
     </div>
@@ -159,7 +158,8 @@ onMounted(async () => {
   transform-origin: left; /* Start from the left when hovered */
   user-select: none;
 }
-.job-field{
+
+.job-field {
   font-weight: lighter;
 }
 

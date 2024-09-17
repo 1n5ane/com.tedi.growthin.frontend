@@ -40,6 +40,30 @@ export default class NotificationService {
         }
     }
 
+    async readAllUnreadByIdList(idList){
+        try {
+            const response = await axiosInstance.post(`${this.NOTIFICATIONS_ENDPOINT}/read`, {
+                ids: idList
+            })
+            return response.data;
+        } catch (e) {
+            return Promise.reject(e)
+        }
+    }
+
+    async countAllUnreadIncomingNotifications(includeChatNotifications = false) {
+        try {
+            const response = await axiosInstance.get(`${this.NOTIFICATIONS_ENDPOINT}/count`, {
+                params: {
+                    includeChatNotifications
+                }
+            })
+            return response.data;
+        } catch (e) {
+            return Promise.reject(e)
+        }
+    }
+
     async listAllIncomingChatNotifications(page = 0,
                                            size = 15,
                                            sortBy = 'createdAt',

@@ -25,12 +25,16 @@ const props = defineProps({
   hideNewArticle: {
     type: Boolean,
     default: false
+  },
+  articleList: {
+    type: Array,
+    default: null
   }
 });
 
 const store = useStore()
 const emit = defineEmits(['success', 'error'])
-const articlesRef = ref(null)
+const articlesRef = ref(props.articleList)
 
 
 const userArticleService = UserArticleService.getInstance()
@@ -85,7 +89,10 @@ onMounted(async () => {
     emit('error', error.message)
   }
 
-  articlesRef.value = await listAllArticles(0, props.userId)
+  //article list may be provided from props
+  if (!articlesRef.value) {
+    articlesRef.value = await listAllArticles(0, props.userId)
+  }
 })
 
 const handleSuccess = (successMessage) => {

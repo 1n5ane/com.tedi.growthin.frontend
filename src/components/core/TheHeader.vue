@@ -3,13 +3,16 @@ import BaseButton from "@/components/core/buttons/BaseButton.vue";
 import {useRouter} from "vue-router";
 import ProfileSearchComponent from "@/components/search/ProfileSearchComponent.vue";
 import {useStore} from "vuex";
-import {computed, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
+import NotificationService from "@/services/user/user-notifications/NotificationService";
 
 const router = useRouter();
 const store = useStore()
 const emit = defineEmits(['error'])
 
-const currentUser = computed(()=> store.getters['authenticationStore/getCurrentLoggedInUser']);
+const currentUser = computed(() => store.getters['authenticationStore/getCurrentLoggedInUser']);
+const unviewedNotifications = ref(null)
+const isAdmin = computed(() =>{return store.getters['authenticationStore/isAdmin']})
 
 const handleLogout = async () => {
   await router.push({name: "logout"});
@@ -18,6 +21,22 @@ const handleLogout = async () => {
 const emitError = (errorMessage) => {
   emit('error', errorMessage)
 }
+
+const fetchUnviewedNotifications = async () => {
+  const notificationService = NotificationService.getInstance()
+  try {
+    const resp = await notificationService.countAllUnreadIncomingNotifications(false)
+    if (resp && resp.success) {
+      unviewedNotifications.value = resp.count
+    }
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+onMounted(async () => {
+  await fetchUnviewedNotifications()
+})
 
 </script>
 
@@ -34,7 +53,6 @@ const emitError = (errorMessage) => {
       </div>
 
       <div class="col-3">
-        <!--        do a search component-->
         <profile-search-component @search-error="emitError"
                                   placeholder="Search a user profile"
                                   :page-size="15"/>
@@ -44,13 +62,19 @@ const emitError = (errorMessage) => {
         <div class="navbar-menu">
           <router-link to="/home" class="navbar-item">Home</router-link>
           <router-link to="/network" class="navbar-item">Network</router-link>
-          <router-link to="/messages" class="navbar-item">Messages</router-link>
-          <router-link to="/notifications" class="navbar-item">Notifications</router-link>
+<!--          <router-link to="/messages" class="navbar-item">Messages</router-link>-->
+          <div class="navbar-item notification-container">
+            <router-link to="/notification">
+              Notifications
+              <span v-if="unviewedNotifications > 0" class="notification-badge">{{ unviewedNotifications }}</span>
+            </router-link>
+          </div>
           <router-link :to="`/profile/${currentUser?.id}`" class="navbar-item">Profile</router-link>
+          <router-link v-if="isAdmin" to="/admin/dashboard" class="navbar-item admin-link">Admin</router-link>
         </div>
       </div>
 
-      <div class="col-auto">
+      <div class="col-auto flex-column d-flex">
         <base-button color="rgba(220, 20, 60, 1)"
                      type="button"
                      bullet-color="black"
@@ -107,6 +131,29 @@ const emitError = (errorMessage) => {
   z-index: 20
 }
 
+.admin-link {
+  color: red !important;
+  border: 2px solid black;
+  margin-left:5px;
+}
+
+.admin-link:hover {
+  background-color: red !important;
+  color:white !important;
+}
+
+.navbar-item.router-link-active {
+  font-weight: bold;
+  color: white;
+  background-color: rgba(255, 69, 0, 0.9);
+}
+
+.admin-link.navbar-item.router-link-active {
+  font-weight: bold;
+  color: white !important;
+  background-color: red;
+}
+
 .navbar {
   display: flex;
   align-items: center;
@@ -143,4 +190,36 @@ const emitError = (errorMessage) => {
   background-color: rgba(255, 69, 0, 0.9);
 }
 
+.navbar-item a:hover {
+  color: white;
+}
+
+.navbar-item a {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+.notification-container {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background-color: red;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-container:hover .notification-badge {
+  background-color: #F1F1F1;
+  color: red;
+}
 </style>

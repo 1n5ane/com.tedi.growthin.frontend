@@ -107,7 +107,7 @@ const handleCreateArticle = async () => {
 onMounted(async () => {
   const userProfileService = UserProfileService.getInstance()
   try {
-    const resp = await userProfileService.getUserProfile({id: store.getters['authenticationStore/getCurrentLoggedInUser'].id})
+    const resp = await userProfileService.getUserProfile({id: store.getters['authenticationStore/getCurrentLoggedInUser']?.id})
     if (resp && resp.success) {
       const base64Data = resp.profile.profilePic?.data;
       const mediaType = resp.profile.profilePic?.mediaType;
@@ -130,13 +130,13 @@ onMounted(async () => {
             v-if="userImageRef.base64Data"
             :image-base64-data="userImageRef.base64Data"
             :image-type="userImageRef.mediaType"
-            size="50px"
+            size="48px"
             class="avatar-component"
             @click="handleAvatarClicked"
         />
       </div>
 
-      <div class="col-8" style="margin-left: 2px">
+      <div class="col-8">
         <article-text-area id="article-title"
                             placeholder="Title"
                             v-model="formData.title"/>
