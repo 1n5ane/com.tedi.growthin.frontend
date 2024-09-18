@@ -8,7 +8,7 @@ import UserProfileService from "@/services/user/user-profiles/UserProfileService
 
 
 // Define the emits options to specify the events this component can emit
-const emit = defineEmits(['error', 'success']);
+const emit = defineEmits(['update-show-header', 'notifications-read', 'error', 'success']);
 const router = useRouter();
 const store = useStore();
 

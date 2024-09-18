@@ -4,7 +4,7 @@ import router from '../../../router'
 
 // Create an Axios instance
 const instance = axios.create({
-    timeout: 15000 // Client timeout (15 seconds)
+    timeout: 15000, // Client timeout (15 seconds)
 });
 
 let isRefreshing = false;

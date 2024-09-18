@@ -54,7 +54,6 @@ router.beforeEach((to, from, next) => {
     if (to.meta.requiresAuth) {
         const isAuthenticated = Boolean(localStorage.getItem('isAuthenticated') === 'true');
         if (!isAuthenticated) {
-            console.log({name: authenticationRoutes.find(route => (route.name === 'login'))?.name})
             next({name: authenticationRoutes.find(route => (route.name === 'login'))?.name});
         } else {
             if (to.meta.requiresAdmin) {
