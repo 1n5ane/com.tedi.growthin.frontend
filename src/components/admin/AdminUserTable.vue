@@ -271,8 +271,8 @@ onMounted(async () => {
             <i :class="sortDirectionRef === 'asc' ? 'arrow-up' : 'arrow-down'"></i>
           </span>
         </th>
-        <th class="no-hover">Phone</th>
-        <th class="no-hover">Country</th>
+        <th>Phone</th>
+        <th>Country</th>
         <th @click="toggleSort('authorities')">
           <span class="header-text">Authorities</span>
           <span v-if="sortColumnRef === 'authorities'" class="sort-arrow">

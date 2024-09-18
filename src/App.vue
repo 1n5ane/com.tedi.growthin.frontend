@@ -2,7 +2,7 @@
   <div class="app-container">
     <action-status-list ref="actionStatusComponentListRef"
                         :action-status-disappear="true"
-                        action-status-disappear-after-seconds="5"
+                        action-status-disappear-after-seconds="3"
                         action-status-error-overlay-color="#FF003B"
                         action-status-error-text-color="white"
                         action-status-success-overlay-color="#00C753"

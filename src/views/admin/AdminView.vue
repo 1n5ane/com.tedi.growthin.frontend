@@ -1,6 +1,7 @@
 <script setup>
 import {onMounted, onUnmounted, ref} from "vue";
 import AdminUserTable from "@/components/admin/AdminUserTable.vue";
+import AdminUserRequests from "@/components/admin/AdminUserRequests.vue";
 
 const emit = defineEmits(['update-show-header', 'success', 'error']);
 const toggleAdminUserListRef = ref(true)
@@ -27,7 +28,7 @@ const toggleAdminRequestList = () => {
 onMounted(() => {
   //toggle navbar
   emit('update-show-header', true);
-  // emit('error', 'Great power brings great responsibility. Please proceed with care.')
+  emit('error', 'Great power brings great responsibility. Please proceed with care.')
 })
 
 onUnmounted(() => {
@@ -55,8 +56,9 @@ onUnmounted(() => {
       <admin-user-table @error="handleError" @success="handleSuccess"/>
     </div>
 
-
-
+    <div v-if="toggleAdminRequestListRef">
+      <admin-user-requests @error="handleError" @success="handleSuccess"/>
+    </div>
   </div>
 </template>
 
