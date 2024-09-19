@@ -12,4 +12,13 @@ export default class FileUtils {
             reader.readAsDataURL(file);
         });
     };
+
+    static fileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(",")[1]);  // Get base64 without metadata prefix
+            reader.onerror = (error) => reject(error);
+        });
+    }
 }
