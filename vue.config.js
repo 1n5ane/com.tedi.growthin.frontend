@@ -33,6 +33,6 @@ module.exports = defineConfig({
     headers: {
       'Strict-Transport-Security': 'max-age=0' // Disable HSTS header
     },
-    hot: true,
+    hot: true
   }
 });
