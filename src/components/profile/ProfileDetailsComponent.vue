@@ -5,6 +5,7 @@ import BaseButton from "@/components/core/buttons/BaseButton.vue";
 import BaseInput from "@/components/core/inputs/BaseInput.vue";
 import ArticleTextArea from "@/components/core/inputs/ArticleTextArea.vue";
 import UserProfileService from "@/services/user/user-profiles/UserProfileService";
+import FileUtils from "@/utils/FileUtils";
 
 const props = defineProps({
   profileId: Number,
@@ -13,6 +14,7 @@ const emit = defineEmits(['error', 'success'])
 const store = useStore()
 const currentProfileRef = ref(null)
 const editDetailsRef = ref(false)
+const pdfInput = ref('')
 
 const isProfileOfCurrentLoggedInUser = computed(() => {
   return props.profileId === store.getters['authenticationStore/getCurrentLoggedInUser'].id
@@ -48,6 +50,9 @@ const formData = reactive({
   description: '',
   isDescriptionPublic: true,
 
+  cvDocument: '',
+  isCvDocumentPublic: true,
+
 });
 const publicOptions = [
   {
@@ -78,6 +83,8 @@ const setFormDataFromProfile = () => {
   formData.isAgePublic = currentProfileRef.value.isAgePublic;
   formData.description = currentProfileRef.value.description;
   formData.isDescriptionPublic = currentProfileRef.value.isDescriptionPublic;
+  formData.isCvDocumentPublic = currentProfileRef.value.isCvDocumentPublic;
+  formData.cvDocument = null
 }
 
 const validators = {
@@ -117,13 +124,13 @@ const handleSubmitEditProfile = async () => {
   const userProfileService = UserProfileService.getInstance()
   try {
     const resp = await userProfileService.updateUserProfile(formData)
-    if(resp && resp.success){
+    if (resp && resp.success) {
       emit('success', 'Successfully updated profile details')
       currentProfileRef.value = resp.profile
       toggleEdit()
       return
     }
-    let errorMsg = resp? resp.error : 'Failed to update profile details'
+    let errorMsg = resp ? resp.error : 'Failed to update profile details'
     emit('error', errorMsg);
   } catch (error) {
     emit('error', error.message)
@@ -138,6 +145,20 @@ watch(() => formData.age, (newValue) => {
   }
   [formData.ageIsValid, formData.ageErrorMsg] = validators.age.isValid(newValue);
 });
+
+const handlePdfUpload = async (event) => {
+  const file = event.target.files[0];
+  if (file && file.type === "application/pdf") {
+    formData.cvDocument = {
+      mediaType: {type: "application/pdf"},
+      data: await FileUtils.fileToBase64(file)
+    };
+  } else {
+    emit('error', 'Please upload a valid pdf file')
+    //how to remove invalid file
+    pdfInput.value.value = '';
+  }
+};
 
 
 onMounted(async () => {
@@ -194,7 +215,8 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div v-if="isProfileOfCurrentLoggedInUser && (formData.description || editDetailsRef)" class="row justify-content-center" style="margin-bottom: 10px">
+    <div v-if="isProfileOfCurrentLoggedInUser && (formData.description || editDetailsRef)"
+         class="row justify-content-center" style="margin-bottom: 10px">
       <div class="col-2 text-start align-self-center">
         Visible to:
       </div>
@@ -232,7 +254,8 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div v-if="isProfileOfCurrentLoggedInUser && (formData.jobField || editDetailsRef)" class="row justify-content-center" style="margin-bottom: 10px">
+    <div v-if="isProfileOfCurrentLoggedInUser && (formData.jobField || editDetailsRef)"
+         class="row justify-content-center" style="margin-bottom: 10px">
       <div class="col-2 text-start align-self-center">
         Visible to:
       </div>
@@ -269,7 +292,8 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div v-if="isProfileOfCurrentLoggedInUser && (formData.education || editDetailsRef)" class="row justify-content-center" style="margin-bottom: 10px">
+    <div v-if="isProfileOfCurrentLoggedInUser && (formData.education || editDetailsRef)"
+         class="row justify-content-center" style="margin-bottom: 10px">
       <div class="col-2 text-start align-self-center">
         Visible to:
       </div>
@@ -310,7 +334,8 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div v-if="isProfileOfCurrentLoggedInUser && (formData.age || editDetailsRef)" class="row justify-content-center" style="margin-bottom: 10px">
+    <div v-if="isProfileOfCurrentLoggedInUser && (formData.age || editDetailsRef)" class="row justify-content-center"
+         style="margin-bottom: 10px">
       <div class="col-2 text-start align-self-center">
         Visible to:
       </div>
@@ -327,6 +352,51 @@ onMounted(async () => {
         </option>
       </select>
     </div>
+
+
+    <!--CV DOCUMENT FIELDS-->
+    <div v-if="currentProfileRef?.cvDocument || editDetailsRef" class="row justify-content-center"
+         :style="{'padding-bottom':editDetailsRef?'10px':0}">
+      <div class="col-2 text-start align-self-center">
+        CV:
+      </div>
+
+      <div class="col-9 text-start align-self-center">
+        <input v-if="editDetailsRef"
+               ref="pdfInput"
+               type="file"
+               id="profile-pdf-upload"
+               accept="application/pdf"
+               @change="handlePdfUpload"/>
+
+        <a v-else
+           class="download-link"
+           :href="FileUtils.createDownloadLink(currentProfileRef.cvDocument.data,currentProfileRef.cvDocument.mediaType.type)"
+           :download="currentProfileRef.username+'CV.pdf'">
+          {{ currentProfileRef.username }}CV.pdf
+        </a>
+      </div>
+    </div>
+
+    <div v-if="isProfileOfCurrentLoggedInUser && (currentProfileRef.cvDocument || editDetailsRef)"
+         class="row justify-content-center" style="margin-bottom: 10px">
+      <div class="col-2 text-start align-self-center">
+        Visible to:
+      </div>
+      <select
+          :disabled="!editDetailsRef"
+          id="profile-cv-visibility"
+          class="col-9"
+          v-model="formData.isCvDocumentPublic">
+        <option
+            v-for="option in publicOptions"
+            :key="option.name"
+            :value="option.isPublic">
+          CV is visible to {{ option.name }} {{ !option.isPublic ? 'only' : null }}
+        </option>
+      </select>
+    </div>
+
   </form>
 </template>
 
@@ -364,5 +434,35 @@ h5 {
   border-radius: 8px;
   padding-bottom: 5px;
   margin: 5px 15px 0 15px;
+}
+
+.download-link {
+  color: #FF4500;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1rem;
+  position: relative;
+}
+
+.download-link:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 2px;
+  background-color: #FF4500;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.download-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.download-link:hover {
+  color: #e63c00;
 }
 </style>
