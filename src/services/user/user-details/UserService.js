@@ -31,6 +31,8 @@ export default class UserService {
                 params.username = field.username
             } else if (field.id != null) {
                 params.id = field.id
+            } else if (field.email) {
+                params.email = field.email
             } else {
                 throw new Error(`Username or id expected to get user details. Instead provided ${JSON.stringify(field)}`)
             }

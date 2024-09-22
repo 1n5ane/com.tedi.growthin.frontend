@@ -21,19 +21,26 @@ const login = async (username, password) => {
 
 const handleSubmit = async () => {
 
-  const username = usernameInput.value
+  const usernameOrEmail = usernameInput.value
   const password = passwordInput.value;
-  if (isNullEmptyOrUndefined(username) || isNullEmptyOrUndefined(password)) {
-    emit('validationError', "Please provide username and password!");
+  if (isNullEmptyOrUndefined(usernameOrEmail) || isNullEmptyOrUndefined(password)) {
+    emit('validationError', "Please provide username/email and password!");
     return;
   }
   // Perform form submission logic (call store action for login)
   try {
-    await login(username, password).then(
+    await login(usernameOrEmail, password).then(
         async () => {
           const userService = UserService.getInstance();
           //get currentlogged in user details and update authentication store
-          const response = await userService.getUser({username})
+          let field
+          if (usernameOrEmail.includes('@')) {
+            field = {email: usernameOrEmail}
+          } else {
+            field = {username: usernameOrEmail}
+          }
+
+          const response = await userService.getUser(field)
           if (response.user == null) {
             throw new Error("Something went wrong during login! Please try again later")
           }
