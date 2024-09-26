@@ -2,12 +2,14 @@
 
 import UserAvatarComponent from "@/components/core/avatars/UserAvatarComponent.vue";
 import {useStore} from "vuex";
-import {ref} from "vue";
+import {onUnmounted, ref, watch} from "vue";
 import UserArticleService from "@/services/user/user-articles/UserArticleService";
 import ReactionButton from "@/components/core/buttons/ReactionButton.vue";
 import CommentTextArea from "@/components/core/inputs/CommentTextArea.vue";
 import DateUtils from "@/utils/DateUtils";
 import AuthorCommentDeleteComponent from "@/components/articles/comments/AuthorCommentDeleteComponent.vue";
+import ReactionsCountComponent from "@/components/articles/ReactionsCountComponent.vue";
+import {useRouter} from "vue-router";
 
 
 const props = defineProps({
@@ -15,12 +17,13 @@ const props = defineProps({
 })
 
 const store = useStore();
-const emit = defineEmits(['success', 'error', 'refresh-comment','remove-comment']);
+const emit = defineEmits(['success', 'error', 'refresh-comment', 'remove-comment']);
 const isAvatarHovered = ref(false)
 const currentUserIsOwnerRef = ref(props.comment.user.id === store.getters['authenticationStore/getCurrentLoggedInUser']?.id)
+const router = useRouter()
 
-const handleAvatarClicked = () => {
-  console.log("AVATAR CLICKED")
+const handleAvatarClicked = async () => {
+  await router.push({path: `/profile/${props.comment.user.id}`})
 }
 
 const handleMouseOver = () => {
@@ -115,7 +118,7 @@ const handleUserCommentReaction = async (alias) => {
         <reaction-button padding-bottom-up="0" padding-left-right="0" @user-reaction="handleUserCommentReaction"/>
       </div>
       <div class="col-auto reaction-col">
-        <span class="reactions-count">{{ props.comment.commentReactions.length }} Reactions</span>
+        <reactions-count-component :reactions="props.comment.commentReactions" modal-title="Comment Reactions"/>
       </div>
     </div>
   </div>
@@ -142,7 +145,7 @@ const handleUserCommentReaction = async (alias) => {
   border-radius: 0;
   margin: 0 15px;
   padding: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow like the article */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   cursor: text;
 }
 
@@ -181,17 +184,12 @@ const handleUserCommentReaction = async (alias) => {
 
 
 .avatar-username {
-  font-size: 1.20rem;
+  font-size: 1.2rem;
   font-weight: 400;
   color: #333;
   position: relative;
   transition: color 0.3s ease;
   cursor: pointer;
-}
-
-.reactions-count {
-  font-size: 1rem;
-  color: gray;
 }
 
 .avatar-username::after {
@@ -203,17 +201,16 @@ const handleUserCommentReaction = async (alias) => {
   height: 2px;
   background-color: black;
   transform: scaleX(0);
-  transform-origin: right; /* Start from the right when not hovered */
+  transform-origin: right;
   transition: transform 0.3s ease;
 }
 
 .underline-effect::after {
-  transform: scaleX(1); /* Scale the underline to full width */
-  transform-origin: left; /* Animate from left to right when hovered */
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .underline-effect {
-  transform: scale(1.01);
   font-weight: 500;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   user-select: none;

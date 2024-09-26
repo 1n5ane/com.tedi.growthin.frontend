@@ -1,6 +1,6 @@
 <script setup>
 import BaseInput from "@/components/core/inputs/BaseInput.vue";
-import {ref, watch} from "vue";
+import {computed, ref, watch} from "vue";
 
 const props = defineProps({
   id: {
@@ -31,7 +31,7 @@ function debounce(func, delay) {
 
 const emit = defineEmits(['update:modelValue', 'focus-change'])
 
-const searchInputRef = ref(props.modelValue);
+const searchInputRef = computed(()=> props.modelValue);
 
 const handleUpdateValue = debounce((newValue) => {
   emit('update:modelValue', newValue);

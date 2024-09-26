@@ -233,7 +233,7 @@ watch(() => formData.email, debounce(async (newValue) => {
       }
     } catch (error) {
       formData.emailIsValid = false;
-      formData.emailErrorMsg = 'Error checking username availability';
+      formData.emailErrorMsg = 'Error checking email availability';
     }
   }
 },250));

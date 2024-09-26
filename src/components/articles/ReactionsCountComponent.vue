@@ -3,6 +3,7 @@ import {computed, onMounted, ref} from 'vue';
 import UserAvatarComponent from "@/components/core/avatars/UserAvatarComponent.vue";
 import {useStore} from "vuex";
 import ImageUtils from "@/utils/ImageUtils";
+import {useRouter} from "vue-router";
 
 const props = defineProps({
   reactions: Array,
@@ -15,6 +16,7 @@ const props = defineProps({
 const isReactionsHovered = ref(false);
 const isModalVisible = ref(false);  // Tracks modal visibility
 const store = useStore()
+const router = useRouter()
 const availableReactions = computed(() => store.getters['reactionStore/getAvailableReactions'])
 
 const handleMouseOver = () => {
@@ -26,7 +28,9 @@ const handleMouseOut = () => {
 };
 
 const toggleModal = () => {
-  isModalVisible.value = !isModalVisible.value;  // Toggle modal visibility
+  if (props.reactions.length > 0) {
+    isModalVisible.value = !isModalVisible.value;  // Toggle modal visibility
+  }
 };
 
 
@@ -39,14 +43,14 @@ const getImageDataFromAlias = (alias) => {
 }
 
 const handleReactionRowClicked = (userId) => {
-  // TODO: redirect to user profile
-  //redirect to user profile
+  router.push({path:`/profile/${userId}`})
 }
 
 </script>
 
 <template>
   <span :class="{'reactions-count': true, 'underline-effect': isReactionsHovered}"
+        :style="{  'cursor': props.reactions?.length>0?'pointer':'default'}"
         @mouseover="handleMouseOver"
         @mouseout="handleMouseOut"
         @click="toggleModal">
@@ -58,7 +62,8 @@ const handleReactionRowClicked = (userId) => {
     <div class="modal-content" @click.stop>
       <h4>{{ props.modalTitle }}</h4>
       <ul>
-        <li v-for="(reaction, index) in props.reactions" :key="index" @click="handleReactionRowClicked(reaction.user.id)">
+        <li v-for="(reaction, index) in props.reactions" :key="index"
+            @click="handleReactionRowClicked(reaction.user.id)">
           <div class="row p-2 no-gutter-x justify-content-center align-items-center">
             <user-avatar-component :image-base64-data="reaction.user.profilePic?.data"
                                    :image-type="reaction.user.profilePic?.mediaType.type"
@@ -86,7 +91,6 @@ const handleReactionRowClicked = (userId) => {
   font-size: 1rem;
   color: gray;
   position: relative;
-  cursor: pointer;
 }
 
 .no-gutter-x {

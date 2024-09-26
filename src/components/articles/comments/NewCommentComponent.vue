@@ -7,8 +7,10 @@ import {useStore} from "vuex";
 import ArticleTextArea from "@/components/core/inputs/ArticleTextArea.vue";
 import BaseButton from "@/components/core/buttons/BaseButton.vue";
 import UserArticleService from "@/services/user/user-articles/UserArticleService";
+import {useRouter} from "vue-router";
 
 const store = useStore()
+const router = useRouter()
 const userImageRef = reactive({
   base64Data: '',
   mediaType: ''
@@ -41,7 +43,7 @@ const formData = reactive({
 
 
 const handleAvatarClicked = () => {
-
+  router.push({path: `/profile/${store.getters['authenticationStore/getCurrentLoggedInUser']?.id}`})
 }
 
 const handleCreateComment = async () => {
@@ -147,5 +149,6 @@ defineExpose({focusOnNewCommentBody})
 .avatar-component {
   top: 10px;
   left: 10px;
+  cursor: pointer !important;
 }
 </style>

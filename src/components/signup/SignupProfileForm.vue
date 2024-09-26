@@ -11,6 +11,7 @@ import UserProfileService from "@/services/user/user-profiles/UserProfileService
 
 import {ref} from 'vue';
 import {useStore} from "vuex";
+import FileUtils from "@/utils/FileUtils";
 
 const props = defineProps({
   titleText: String,
@@ -30,6 +31,7 @@ const publicOptions = [
 
 const editAvatar = ref(false);
 const avatarImageRef = ref('')
+const pdfInput = ref(null);
 
 const loadAvatarImage = async () => {
   avatarImageRef.value = await ImageUtils.getImageDataUrl(baseAvatarImage)
@@ -51,9 +53,12 @@ const formData = reactive({
   description: '',
   isDescriptionPublic: true,
 
+  cvDocumentBase64: '',
+  isCvDocumentPublic: true
+
 });
 
-const emit = defineEmits(['signupProfileError', 'signupProfileSuccess'])
+const emit = defineEmits(['signupProfileError', 'signupProfileSuccess', 'error'])
 
 const handleAvatarClick = () => {
   //if avatar clicked
@@ -64,6 +69,17 @@ const handleEditCompleted = (imageData) => {
   avatarImageRef.value = imageData;
   editAvatar.value = false;
 }
+
+const handlePdfUpload = async (event) => {
+  const file = event.target.files[0];
+  if (file && file.type === "application/pdf") {
+    formData.cvDocumentBase64 = await FileUtils.fileToBase64(file);
+  } else {
+    emit('error', 'Please upload a valid pdf file')
+    //how to remove invalid file
+    pdfInput.value.value = '';
+  }
+};
 
 const handleSubmit = async () => {
   const {type, base64Data} = ImageUtils.extractTypeAndBase64Data(avatarImageRef.value)
@@ -78,6 +94,11 @@ const handleSubmit = async () => {
       isDescriptionPublic: formData.isDescriptionPublic,
       age: formData.age,
       isAgePublic: formData.isAgePublic,
+      isCvDocumentPublic: formData.isCvDocumentPublic,
+      cvDocument: formData.cvDocumentBase64 ? {
+        mediaType: {type: "application/pdf"},
+        data: formData.cvDocumentBase64
+      } : null,
       profilePic: {
         mediaType: {type},
         data: base64Data
@@ -155,6 +176,40 @@ const handleSubmit = async () => {
         </div>
       </div>
 
+      <!-- PDF CV UPLOAD -->
+      <div class="row p-2 justify-content-center">
+        <div class="col-4 align-self-start">
+          <label class="col d-flex align-content-start" for="profile-pdf-upload">Upload CV (pdf)</label>
+          <div class="col-auto">
+            <input
+                ref="pdfInput"
+                type="file"
+                id="profile-pdf-upload"
+                accept="application/pdf"
+                @change="handlePdfUpload"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+
+          <div class="row justify-content-start">
+            <label class="col d-flex align-content-start" for="profile-job-field-public">
+              Viewed By
+            </label>
+          </div>
+          <select
+              id="profile-job-field-public"
+              class="single-field w-100"
+              v-model="formData.isCvDocumentPublic">
+            <option
+                v-for="option in publicOptions"
+                :key="option.name"
+                :value="option.isPublic">
+              {{ option.name }}
+            </option>
+          </select>
+        </div>
+      </div>
 
       <!--Education fields-->
       <div class="row p-2 justify-content-center">

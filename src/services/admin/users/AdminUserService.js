@@ -23,6 +23,19 @@ export default class AdminUserService {
         return AdminUserService.instance;
     }
 
+    async exportUserData(userIds, type = 'json') {
+        try {
+            const response = await axiosInstance.post(`${this.ADMIN_ENDPOINT}/user/export`, {ids:userIds},{
+                params:{
+                    type
+                }
+            })
+            return response.data;
+        } catch (e) {
+            return Promise.reject(e)
+        }
+    }
+
     async findUserById(userId) {
         try {
             const response = await axiosInstance.get(`${this.ADMIN_ENDPOINT}/user/${userId}`)
@@ -73,6 +86,28 @@ export default class AdminUserService {
     async banUserByUserId(userId) {
         try {
             const response = await axiosInstance.post(`${this.ADMIN_ENDPOINT}/user/${userId}/ban`, null)
+            return response.data;
+        } catch (e) {
+            return Promise.reject(e)
+        }
+    }
+
+    async banUsers(userIds) {
+        try {
+            const response = await axiosInstance.post(`${this.ADMIN_ENDPOINT}/user/ban`, {
+                ids: userIds
+            })
+            return response.data;
+        } catch (e) {
+            return Promise.reject(e)
+        }
+    }
+
+    async unbanUsers(userIds) {
+        try {
+            const response = await axiosInstance.post(`${this.ADMIN_ENDPOINT}/user/unban`, {
+                ids: userIds
+            })
             return response.data;
         } catch (e) {
             return Promise.reject(e)

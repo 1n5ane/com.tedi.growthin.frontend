@@ -4,7 +4,7 @@ import router from '../../../router'
 
 // Create an Axios instance
 const instance = axios.create({
-    timeout: 15000 // Client timeout (15 seconds)
+    timeout: 15000, // Client timeout (15 seconds)
 });
 
 let isRefreshing = false;
@@ -26,13 +26,12 @@ instance.interceptors.response.use(
     (response) => response,
     async (error) => {
         const {config, response} = error;
-        console.log("[AXIOS] Error response", error.response);
         if (error.response) {
             switch (error.response.status) {
                 case 401:
-                    console.log('[AXIOS] Issuing refresh token');
                     if (!isRefreshing) {
                         isRefreshing = true;
+                        console.log('[AXIOS] Issuing refresh token');
                         try {
                             await store.dispatch("authenticationStore/refreshToken")
                             const newToken = store.getters['authenticationStore/getToken']
@@ -65,8 +64,6 @@ instance.interceptors.response.use(
                             isRefreshing = false;
                         }
                     } else {
-                        // If a refresh is in progress, queue the request
-                        console.log('A REFRESH IS IN PROGESS')
                         return new Promise((resolve) => {
                             failedRequestsQueue.push((newToken) => {
                                 config.headers['Authorization'] = `Bearer ${newToken}`;
@@ -76,7 +73,7 @@ instance.interceptors.response.use(
                     }
                     break;
                 case 403:
-                    console.error('Forbidden access - check your permissions. Should redirect to forbidden page');
+                    console.error('Forbidden access');
                     break;
                 case 500:
                     console.error('Server error - try again later');

@@ -11,19 +11,21 @@
            :required="required"
            :placeholder="placeholder"
            :value="modelValue"
+           :readonly="props.readOnly"
            @input="onInput"
            @focus="onFocus(true)"
            @blur="onFocus(false)"
-           :class="['single-field', { 'input-error': !valid, 'input-valid': valid }]">
+           :class="['single-field', { 'input-error': !valid, 'input-valid': valid }]"
+           :style="inputStyle">
     <!-- Tooltip hint -->
-    <div v-if="!valid" class="error-hint">
+    <div v-if="!valid" class="error-hint" :style="{ 'background-color': props.errorHintBackgroundColor, 'color':props.errorHintMessageColor}">
       {{ errorMessage }}
     </div>
   </div>
 </template>`
 
 <script setup>
-import {defineProps, ref} from 'vue'
+import {computed, defineProps, ref} from 'vue'
 import BaseLabel from "@/components/core/inputs/labels/BaseLabel.vue";
 
 
@@ -65,6 +67,26 @@ const props = defineProps({
   required: {
     type: Boolean,
     default: false
+  },
+  readOnly: {
+    type: Boolean,
+    default: false
+  },
+  enableBorder: {
+    type: Boolean,
+    default: true
+  },
+  disableShadow: {
+    type: Boolean,
+    default: false
+  },
+  errorHintBackgroundColor: {
+    type: String,
+    default: 'rgba(255, 0, 0, 0.1)'
+  },
+  errorHintMessageColor:{
+    type: String,
+    default: 'red'
   }
 })
 
@@ -78,6 +100,24 @@ const onInput = (event) => {
   emit('update:modelValue', value);
 }
 
+const inputStyle = computed(() => {
+  let style
+  if (!props.enableBorder) {
+    style = {border: 'none'};
+  } else if (!props.valid) {
+    style = {border: '2px solid red'};
+  } else {
+    style = {border: '2px solid black'};
+  }
+
+  if(!props.disableShadow){
+    style['box-shadow'] = '4px 4px 4px rgba(0, 0, 0, 0.4)'
+  }else {
+    style['box-shadow'] = 'none'
+  }
+  return style
+});
+
 const onFocus = (isFocused) => {
   emit('focus-change', isFocused);
 };
@@ -88,7 +128,7 @@ const onFocus = (isFocused) => {
 <style scoped>
 
 .input-container {
-  position: relative; /* Create a context for absolute positioning */
+  position: relative;
   width: 100%;
 }
 
@@ -100,23 +140,14 @@ const onFocus = (isFocused) => {
   transition: border-color 0.6s;
 }
 
-/* Style when the input field is focused and valid */
+
 .input-valid:focus {
   outline: none;
-  border: 2px solid black;
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.4); /* Add a shadow effect */
-}
-
-/* Error style */
-.input-error {
-  border: 2px solid red; /* Red border to indicate an error */
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.4); /* Add a shadow effect */
 }
 
 .input-error:focus {
   outline: none;
-  border: 2px solid red;
-  box-shadow: none; /* No shadow effect on focus when invalid */
+  box-shadow: none;
 }
 
 /* Tooltip styling */
@@ -124,13 +155,12 @@ const onFocus = (isFocused) => {
   position: absolute;
   top: 100%; /* Position below the input */
   left: 0;
-  background-color: rgba(255, 0, 0, 0.1);
-  color: red;
   font-size: 0.85rem;
   padding: 4px;
   border-radius: 4px;
   white-space: nowrap;
   margin-top: 2px;
+  z-index: 1;
 }
 
 

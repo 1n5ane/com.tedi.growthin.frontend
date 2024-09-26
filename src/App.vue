@@ -2,19 +2,19 @@
   <div class="app-container">
     <action-status-list ref="actionStatusComponentListRef"
                         :action-status-disappear="true"
-                        action-status-disappear-after-seconds="5"
+                        action-status-disappear-after-seconds="3"
                         action-status-error-overlay-color="#FF003B"
                         action-status-error-text-color="white"
                         action-status-success-overlay-color="#00C753"
                         action-status-success-text-color="white"/>
-    <the-header @error="pushError" v-if="showHeaderRef"></the-header>
-    <router-view @update-show-header="updateShowHeader" @error="pushError" @success="pushSuccess"/>
+    <the-header @error="pushError" v-if="showHeaderRef" :key="headerKey"></the-header>
+    <router-view @update-show-header="updateShowHeader" @notifications-read="handleNotificationsRead" @error="pushError" @success="pushSuccess"/>
   </div>
 </template>
 
 <script setup lang="js">
 import ActionStatusList from "@/components/action-status/ActionStatusComponentList.vue";
-import {ref, watch} from 'vue'
+import {computed, ref, watch} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import TheHeader from "@/components/core/TheHeader.vue";
 
@@ -23,6 +23,8 @@ const actionStatusComponentListRef = ref(null);
 const route = useRoute();
 const router = useRouter();
 const showHeaderRef = ref(false);
+const refreshHeaderRef = ref(null);
+const headerKey = computed(() => `header-${showHeaderRef.value}-${refreshHeaderRef.value}`);
 const updateShowHeader = (value) => {
   showHeaderRef.value = value;
 };
@@ -65,6 +67,10 @@ const pushSuccess = (successMsg) => {
   }
 };
 
+const handleNotificationsRead = () =>{
+  refreshHeaderRef.value = Date.now()
+}
+
 </script>
 
 <style>
@@ -95,4 +101,6 @@ nav a {
 nav a.router-link-exact-active {
   color: #42b983;
 }
+
+
 </style>

@@ -10,8 +10,10 @@ import {VueMultiImageUpload} from '@zakerxa/vue-multiple-image-upload';
 import FileUtils from "@/utils/FileUtils";
 import UserArticleService from "@/services/user/user-articles/UserArticleService";
 import ImageUtils from "@/utils/ImageUtils";
+import {useRouter} from "vue-router";
 
 const store = useStore()
+const router = useRouter()
 const userImageRef = reactive({
   base64Data: '',
   mediaType: ''
@@ -59,7 +61,7 @@ const handleImagesData = (images) => {
 
 
 const handleAvatarClicked = () => {
-
+  router.push({path: `/profile/${store.getters['authenticationStore/getCurrentLoggedInUser']?.id}`})
 }
 
 const handleCreateArticle = async () => {
@@ -105,7 +107,7 @@ const handleCreateArticle = async () => {
 onMounted(async () => {
   const userProfileService = UserProfileService.getInstance()
   try {
-    const resp = await userProfileService.getUserProfile({id: store.getters['authenticationStore/getCurrentLoggedInUser'].id})
+    const resp = await userProfileService.getUserProfile({id: store.getters['authenticationStore/getCurrentLoggedInUser']?.id})
     if (resp && resp.success) {
       const base64Data = resp.profile.profilePic?.data;
       const mediaType = resp.profile.profilePic?.mediaType;
@@ -128,7 +130,7 @@ onMounted(async () => {
             v-if="userImageRef.base64Data"
             :image-base64-data="userImageRef.base64Data"
             :image-type="userImageRef.mediaType"
-            size="50px"
+            size="48px"
             class="avatar-component"
             @click="handleAvatarClicked"
         />
@@ -207,5 +209,6 @@ onMounted(async () => {
 .avatar-component {
   top: 10px;
   left: 10px;
+  cursor: pointer !important;
 }
 </style>

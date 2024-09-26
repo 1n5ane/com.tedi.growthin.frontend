@@ -6,10 +6,13 @@ import {useStore} from "vuex";
 import BaseSearchInput from "@/components/core/inputs/BaseSearchInput.vue";
 import UserConnectionService from "@/services/user/user-connections/UserConnectionService";
 import ConnectionDiscoverCardList from "@/components/connections/ConnectionDiscoverCardList.vue";
+import {useRoute, useRouter} from "vue-router";
 
 
 const emit = defineEmits(['update-show-header', 'error', 'success'])
 const store = useStore()
+const route = useRoute()
+const router = useRouter()
 const pendingRequestsCounterRef = ref(null)
 const totalConnectionsCounterRef = ref(null)
 const searchQueryUsername = ref('')
@@ -60,9 +63,25 @@ const handleAcceptedConnection = () => {
   connectionCardListKeyRef.value++;
 }
 
+const activateTabFromRouteParam = (tab) => {
+  if(tab === 'connection-requests'){
+    toggleConnectionRequestList()
+  }else if(tab === 'connections'){
+    toggleConnectionList()
+  }else if(tab === 'connections-discover'){
+    toggleDiscoverConnectionList()
+  }
+}
+
 onMounted(async () => {
   //toggle navbar
   emit('update-show-header', true);
+
+  if(route.query?.tab){
+    activateTabFromRouteParam(route.query.tab)
+    router.replace({ query: { tab: undefined } });
+  }
+
   //get total connection requests
   const userConnectionService = UserConnectionService.getInstance()
   try {
@@ -191,7 +210,7 @@ onUnmounted(() => {
   flex-direction: column;
   background-color: #f8f9f9;
   margin: 0;
-  height: 100vh;
+  height: 94vh;
   overflow-y: hidden;
 }
 
@@ -218,7 +237,7 @@ onUnmounted(() => {
   padding: 1rem;
   background-color: #f8f9fa;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-height: 50vh;
+  max-height: 76vh;
   overflow-y: auto;
 }
 

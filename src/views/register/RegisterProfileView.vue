@@ -5,13 +5,14 @@ import {useRouter} from "vue-router";
 import {onMounted} from "vue";
 import UserProfileService from "@/services/user/user-profiles/UserProfileService";
 import {useStore} from "vuex";
+import baseAvatarImage from "@/assets/images/avatars/avatar_1.jpg";
 
 const router = useRouter()
 const store = useStore()
 
 const emit = defineEmits(['error', 'success']);
 
-const handleSignupError = (errorMsg) => {
+const handleError = (errorMsg) => {
   emit('error', errorMsg)
 }
 
@@ -45,7 +46,9 @@ onMounted(async () => {
 
 <template>
   <div class="form-wrapper">
-    <signup-profile-form @signup-profile-error="handleSignupError" @signup-profile-success="handleSignupSuccess"
+    <signup-profile-form @signup-profile-error="handleError"
+                         @signup-profile-success="handleSignupSuccess"
+                         @error="handleError"
                          title-text="Let's set up you profile" title-text-color="white"
                          title-text-background-color="rgba(255, 69, 0, 0.8)"/>
   </div>

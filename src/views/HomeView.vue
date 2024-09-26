@@ -53,7 +53,7 @@ onUnmounted(() => {
   flex-direction: column;
   background-color: #f8f9f9;
   margin: 0;
-  height: 100vh;
+  height: 94vh;
 }
 
 </style>

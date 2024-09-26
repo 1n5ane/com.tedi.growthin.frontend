@@ -12,6 +12,7 @@ import DateUtils from "../../utils/DateUtils";
 import AuthorArticleSettingsComponent from "@/components/articles/AuthorArticleSettingsComponent.vue";
 import ArticleMediaComponent from "@/components/articles/ArticleMediaComponent.vue";
 import ReactionsCountComponent from "@/components/articles/ReactionsCountComponent.vue";
+import {useRouter} from "vue-router";
 
 
 const props = defineProps({
@@ -23,6 +24,7 @@ const props = defineProps({
 })
 
 const store = useStore();
+const router = useRouter();
 const emit = defineEmits(['success', 'error', 'refresh-article', 'remove-article']);
 const isAvatarHovered = ref(false);
 const totalArticleCommentsRef = ref(null);
@@ -32,7 +34,7 @@ const commentListRef = ref(null);
 const currentUserIsOwnerRef = ref(props.article.user.id === store.getters['authenticationStore/getCurrentLoggedInUser']?.id)
 
 const handleAvatarClicked = () => {
-  console.log("AVATAR CLICKED")
+  router.push({path: `/profile/${props.article.user.id}`})
 }
 
 const handleMouseOver = () => {
@@ -133,7 +135,6 @@ onMounted(async () => {
         <div class="d-flex flex-column align-items-end">
         <!-- If currentLOggedInUser is author of article-->
           <div v-if="currentUserIsOwnerRef" class="d-flex flex-column align-items-end" style="margin-top: -1rem">
-<!--            TO USE HERE-->
             <author-article-settings-component :article-id="props.article.id"
                                                :article-visibility="props.article.publicStatus"
                                                @update-visibility-success="handleUpdateVisibilitySuccess"
@@ -281,7 +282,7 @@ onMounted(async () => {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -2px;
+  bottom: 0px;
   width: 100%;
   height: 2px;
   background-color: black;
